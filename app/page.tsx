@@ -15,6 +15,7 @@ import {
   useQrReader,
 } from "@/lib/max-bridge"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 export default function Home() {
   useMaxReady()
@@ -42,6 +43,8 @@ export default function Home() {
 
   return (
     <main style={{ padding: 24, fontFamily: "sans-serif" }}>
+      <Image src={user?.photo_url ?? ""} alt={user?.id.toString() ?? ""} />
+
       <h1>MAX Bridge Demo</h1>
 
       <section>
@@ -76,13 +79,15 @@ export default function Home() {
 
       <section>
         <h2>Links</h2>
-        {/* openLink / openMaxLink require a user gesture — wire directly to onClick */}
-        <button onClick={() => openLink("https://example.com")}>Open external link</button>
+        <button onClick={() => openLink("https://ya.ru/")}>Open external link</button>
       </section>
 
       <section>
         <h2>Share</h2>
-        <button onClick={() => shareContent("Hello from MAX mini-app!", "https://max.ru")}>
+        <button
+          type="button"
+          onClick={() => shareContent("Hello from MAX mini-app!", "https://max.ru")}
+        >
           Share
         </button>
       </section>
