@@ -15,7 +15,6 @@ import {
   useQrReader,
 } from "@/lib/max-bridge"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
 
 export default function Home() {
   useMaxReady()
@@ -43,7 +42,7 @@ export default function Home() {
 
   return (
     <main style={{ padding: 24, fontFamily: "sans-serif" }}>
-      <Image src={user?.photo_url ?? ""} alt={user?.id.toString() ?? ""} />
+      <img src={user?.photo_url} alt={user?.id.toString()} />
 
       <h1>MAX Bridge Demo</h1>
 
