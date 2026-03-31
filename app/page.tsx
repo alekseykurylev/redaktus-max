@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   disableScreenCaptureProtection,
   downloadFile,
@@ -20,6 +21,7 @@ export default function Home() {
   useMaxReady()
 
   const router = useRouter()
+  const [shareError, setShareError] = useState<string | null>(null)
 
   // 2. Read bridge metadata
   const { available, user, platform, version } = useMaxBridge()
@@ -35,6 +37,25 @@ export default function Home() {
 
   // 6. QR reader
   const { scan, result: qrResult, error: qrError } = useQrReader()
+
+  const handleShare = async () => {
+    setShareError(null)
+
+    try {
+      await shareContent({
+        text: "Hello from MAX mini-app!",
+        link: "https://max.ru",
+      })
+    } catch (error) {
+      if (error && typeof error === "object" && "error" in error) {
+        const bridgeError = error as { error?: { code?: string } }
+        setShareError(bridgeError.error?.code ?? "MAX Bridge share failed")
+        return
+      }
+
+      setShareError(error instanceof Error ? error.message : "MAX Bridge share failed")
+    }
+  }
 
   if (!available) {
     return <p>Running outside MAX — bridge not available.</p>
@@ -83,12 +104,8 @@ export default function Home() {
 
       <section>
         <h2>Share</h2>
-        <button
-          type="button"
-          onClick={() => shareContent("Hello from MAX mini-app!", "https://max.ru")}
-        >
-          Share
-        </button>
+        <button onClick={() => void handleShare()}>Share</button>
+        {shareError && <p style={{ color: "red" }}>Share error: {shareError}</p>}
       </section>
 
       <section>

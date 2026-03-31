@@ -48,9 +48,15 @@ export type ImpactStyle = "soft" | "light" | "medium" | "heavy" | "rigid"
 export type NotificationType = "error" | "success" | "warning"
 
 export interface HapticFeedback {
-  impactOccurred(impactStyle: ImpactStyle, disableVibrationFallback?: boolean): void
-  notificationOccurred(notificationType: NotificationType, disableVibrationFallback?: boolean): void
-  selectionChanged(disableVibrationFallback?: boolean): void
+  impactOccurred(
+    impactStyle: ImpactStyle,
+    disableVibrationFallback?: boolean,
+  ): Promise<unknown>
+  notificationOccurred(
+    notificationType: NotificationType,
+    disableVibrationFallback?: boolean,
+  ): Promise<unknown>
+  selectionChanged(disableVibrationFallback?: boolean): Promise<unknown>
 }
 
 // ── BackButton ────────────────────────────────────────────────
@@ -188,17 +194,17 @@ export interface MaxWebApp {
   /** Open a max.ru deep link inside MAX (requires user gesture) */
   openMaxLink(url: string): void
   /** Trigger native share sheet (requires user gesture) */
-  shareContent(text: string, link: string): void
+  shareContent(params: ShareTextParams): Promise<unknown>
   /** Trigger MAX-internal share screen (requires user gesture) */
-  shareMaxContent(params: ShareMaxContentParams): void
+  shareMaxContent(params: ShareMaxContentParams): Promise<unknown>
   /** Download a file to the user's device (requires user gesture) */
-  downloadFile(url: string, file_name: string): void
+  downloadFile(url: string, file_name: string): Promise<unknown>
 
-  requestScreenMaxBrightness(): void
-  restoreScreenBrightness(): void
+  requestScreenMaxBrightness(): Promise<unknown>
+  restoreScreenBrightness(): Promise<unknown>
 
   /** Open camera / gallery QR-code reader */
-  openCodeReader(fileSelect?: boolean): void
+  openCodeReader(fileSelect?: boolean): Promise<unknown>
 }
 
 // ── Global augmentation ───────────────────────────────────────

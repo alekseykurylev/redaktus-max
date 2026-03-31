@@ -9,6 +9,7 @@ import type {
   ImpactStyle,
   NotificationType,
   ShareMaxContentParams,
+  ShareTextParams,
 } from "./types"
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -183,16 +184,24 @@ export function openMaxLink(url: string): void {
  * Trigger the native share sheet with text / link.
  * Requires a user gesture (click) immediately before calling.
  */
-export function shareContent(text: string, link: string): void {
-  getWebApp()?.shareContent(text, link)
+export function shareContent(text: string, link?: string): Promise<unknown>
+export function shareContent(params: ShareTextParams): Promise<unknown>
+export function shareContent(
+  paramsOrText: ShareTextParams | string,
+  link?: string,
+): Promise<unknown> {
+  const params =
+    typeof paramsOrText === "string" ? { text: paramsOrText, link } : paramsOrText
+
+  return getWebApp()?.shareContent(params) ?? Promise.reject(new Error("MAX Bridge unavailable"))
 }
 
 /**
  * Trigger the MAX-internal share screen (text/link or forwarded message).
  * Requires a user gesture (click) immediately before calling.
  */
-export function shareMaxContent(params: ShareMaxContentParams): void {
-  getWebApp()?.shareMaxContent(params)
+export function shareMaxContent(params: ShareMaxContentParams): Promise<unknown> {
+  return getWebApp()?.shareMaxContent(params) ?? Promise.reject(new Error("MAX Bridge unavailable"))
 }
 
 // ── File download ─────────────────────────────────────────────
@@ -201,8 +210,8 @@ export function shareMaxContent(params: ShareMaxContentParams): void {
  * Download a file to the user's device.
  * Requires a user gesture (click) immediately before calling.
  */
-export function downloadFile(url: string, fileName: string): void {
-  getWebApp()?.downloadFile(url, fileName)
+export function downloadFile(url: string, fileName: string): Promise<unknown> {
+  return getWebApp()?.downloadFile(url, fileName) ?? Promise.reject(new Error("MAX Bridge unavailable"))
 }
 
 // ── Screen brightness ─────────────────────────────────────────
@@ -210,15 +219,17 @@ export function downloadFile(url: string, fileName: string): void {
 /**
  * Set screen brightness to maximum for 30 seconds.
  */
-export function requestMaxBrightness(): void {
-  getWebApp()?.requestScreenMaxBrightness()
+export function requestMaxBrightness(): Promise<unknown> {
+  return (
+    getWebApp()?.requestScreenMaxBrightness() ?? Promise.reject(new Error("MAX Bridge unavailable"))
+  )
 }
 
 /**
  * Restore screen brightness to its original value.
  */
-export function restoreBrightness(): void {
-  getWebApp()?.restoreScreenBrightness()
+export function restoreBrightness(): Promise<unknown> {
+  return getWebApp()?.restoreScreenBrightness() ?? Promise.reject(new Error("MAX Bridge unavailable"))
 }
 
 // ── Screen capture ────────────────────────────────────────────
@@ -250,22 +261,37 @@ export function isScreenCaptureProtected(): boolean {
 /**
  * Trigger an impact haptic effect.
  */
-export function hapticImpact(style: ImpactStyle, disableVibrationFallback = false): void {
-  getWebApp()?.HapticFeedback.impactOccurred(style, disableVibrationFallback)
+export function hapticImpact(
+  style: ImpactStyle,
+  disableVibrationFallback = false,
+): Promise<unknown> {
+  return (
+    getWebApp()?.HapticFeedback.impactOccurred(style, disableVibrationFallback) ??
+    Promise.reject(new Error("MAX Bridge unavailable"))
+  )
 }
 
 /**
  * Trigger a notification haptic effect (success / error / warning).
  */
-export function hapticNotification(type: NotificationType, disableVibrationFallback = false): void {
-  getWebApp()?.HapticFeedback.notificationOccurred(type, disableVibrationFallback)
+export function hapticNotification(
+  type: NotificationType,
+  disableVibrationFallback = false,
+): Promise<unknown> {
+  return (
+    getWebApp()?.HapticFeedback.notificationOccurred(type, disableVibrationFallback) ??
+    Promise.reject(new Error("MAX Bridge unavailable"))
+  )
 }
 
 /**
  * Trigger a selection-change haptic effect.
  */
-export function hapticSelectionChanged(disableVibrationFallback = false): void {
-  getWebApp()?.HapticFeedback.selectionChanged(disableVibrationFallback)
+export function hapticSelectionChanged(disableVibrationFallback = false): Promise<unknown> {
+  return (
+    getWebApp()?.HapticFeedback.selectionChanged(disableVibrationFallback) ??
+    Promise.reject(new Error("MAX Bridge unavailable"))
+  )
 }
 
 // ── QR / Code Reader ──────────────────────────────────────────
@@ -276,8 +302,8 @@ export function hapticSelectionChanged(disableVibrationFallback = false): void {
  *
  * @param fileSelect  `true` (default) — also allow picking from the gallery
  */
-export function openCodeReader(fileSelect = true): void {
-  getWebApp()?.openCodeReader(fileSelect)
+export function openCodeReader(fileSelect = true): Promise<unknown> {
+  return getWebApp()?.openCodeReader(fileSelect) ?? Promise.reject(new Error("MAX Bridge unavailable"))
 }
 
 // ── Storage helpers ───────────────────────────────────────────
