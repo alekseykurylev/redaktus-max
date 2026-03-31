@@ -10,6 +10,17 @@ import type {
 } from "./types"
 
 const bridgeSubscribers = new Set<() => void>()
+const EMPTY_BRIDGE_INFO: MaxBridgeInfo = {
+  available: false,
+  transport: "fallback",
+  initData: null,
+  initDataUnsafe: {},
+  platform: null,
+  version: null,
+  queryId: null,
+  user: null,
+  chat: null,
+}
 
 function notifyBridgeSubscribers() {
   bridgeSubscribers.forEach((callback) => callback())
@@ -38,6 +49,10 @@ export function ensureMaxBridge() {
 
 export function getMaxBridgeSnapshot(): MaxBridgeInfo {
   return readBridgeInfo(getWebApp())
+}
+
+export function getServerMaxBridgeSnapshot(): MaxBridgeInfo {
+  return EMPTY_BRIDGE_INFO
 }
 
 export function subscribeToMaxBridge(callback: () => void) {

@@ -4,7 +4,7 @@ import { useEffect, useEffectEvent, useState, useSyncExternalStore } from "react
 import {
   disableClosingConfirmation,
   enableClosingConfirmation,
-  getMaxBridgeSnapshot,
+  getServerMaxBridgeSnapshot,
   getWebApp,
   hapticImpact,
   hapticNotification,
@@ -14,15 +14,18 @@ import {
   requestContact,
   subscribeToMaxBridge,
 } from "./bridge"
-import { getErrorCode } from "./helpers"
-import type { ImpactStyle, MaxBridgeEventName, NotificationType } from "./types"
+import { getErrorCode, readBridgeInfo } from "./helpers"
+import type { ImpactStyle, MaxBridgeEventName, MaxBridgeInfo, NotificationType } from "./types"
+
+const EMPTY_BRIDGE_INFO: MaxBridgeInfo = getServerMaxBridgeSnapshot()
 
 function useBridgeInstance() {
   return useSyncExternalStore(subscribeToMaxBridge, getWebApp, () => null)
 }
 
 export function useMaxBridge() {
-  return useSyncExternalStore(subscribeToMaxBridge, getMaxBridgeSnapshot, getMaxBridgeSnapshot)
+  const bridge = useBridgeInstance()
+  return bridge ? readBridgeInfo(bridge) : EMPTY_BRIDGE_INFO
 }
 
 export function useMaxBridgeBootstrap(autoReady = false) {
