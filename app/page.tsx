@@ -12,32 +12,20 @@ import {
   useBackButton,
   useHaptic,
   useMaxBridge,
-  useMaxReady,
   usePhoneRequest,
   useQrReader,
-} from "@/lib/max-bridge"
+} from "@/lib/max-bridge-gpt"
 import { useRouter } from "next/navigation"
 
 export default function Home() {
-  useMaxReady()
-
   const router = useRouter()
   const [shareError, setShareError] = useState<string | null>(null)
 
-  // 2. Read bridge metadata
   const { available, user, platform, version } = useMaxBridge()
-
-  // 3. Back button
   useBackButton(() => router.back())
-
-  // 4. Haptic feedback
   const { impact, notification } = useHaptic()
-
-  // 5. Phone request
-  const { requestPhone, phone, isPending } = usePhoneRequest()
-
-  // 6. QR reader
-  const { scan, result: qrResult, error: qrError } = useQrReader()
+  const { requestPhone, phone, error: phoneError, isPending } = usePhoneRequest()
+  const { scan, result: qrResult, error: qrError, isPending: isQrPending } = useQrReader()
 
   const handleShare = async () => {
     setShareError(null)
@@ -108,11 +96,14 @@ export default function Home() {
           {isPending ? "Waiting…" : "Request phone"}
         </button>
         {phone && <p>Phone: {phone}</p>}
+        {phoneError && <p style={{ color: "red" }}>Phone error: {phoneError}</p>}
       </section>
 
       <section>
         <h2>QR reader</h2>
-        <button onClick={() => scan()}>Scan QR</button>
+        <button onClick={() => void scan()} disabled={isQrPending}>
+          {isQrPending ? "Scanning..." : "Scan QR"}
+        </button>
         {qrResult && <p>Result: {qrResult}</p>}
         {qrError && <p style={{ color: "red" }}>Error: {qrError}</p>}
       </section>
@@ -131,20 +122,20 @@ export default function Home() {
 
       <section>
         <h2>Download</h2>
-        <button onClick={() => downloadFile("https://example.com/file.pdf", "document.pdf")}>
+        <button onClick={() => void downloadFile("https://example.com/file.pdf", "document.pdf")}>
           Download file
         </button>
       </section>
 
       <section>
         <h2>Screen capture</h2>
-        <button onClick={enableScreenCaptureProtection}>Protect screen</button>
-        <button onClick={disableScreenCaptureProtection}>Allow capture</button>
+        <button onClick={() => void enableScreenCaptureProtection()}>Protect screen</button>
+        <button onClick={() => void disableScreenCaptureProtection()}>Allow capture</button>
       </section>
 
       <section>
         <h2>Brightness</h2>
-        <button onClick={requestMaxBrightness}>Max brightness (30 s)</button>
+        <button onClick={() => void requestMaxBrightness()}>Max brightness (30 s)</button>
       </section>
     </main>
   )
