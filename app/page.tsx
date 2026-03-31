@@ -8,6 +8,7 @@ import {
   openLink,
   requestMaxBrightness,
   shareContent,
+  shareMaxContent,
   useBackButton,
   useHaptic,
   useMaxBridge,
@@ -44,6 +45,25 @@ export default function Home() {
     try {
       await shareContent({
         text: "Hello from MAX mini-app!",
+        link: "https://max.ru",
+      })
+    } catch (error) {
+      if (error && typeof error === "object" && "error" in error) {
+        const bridgeError = error as { error?: { code?: string } }
+        setShareError(bridgeError.error?.code ?? "MAX Bridge share failed")
+        return
+      }
+
+      setShareError(error instanceof Error ? error.message : "MAX Bridge share failed")
+    }
+  }
+
+  const handleMaxShare = async () => {
+    setShareError(null)
+
+    try {
+      await shareMaxContent({
+        text: "Hello from MAX internal share!",
         link: "https://max.ru",
       })
     } catch (error) {
@@ -105,6 +125,7 @@ export default function Home() {
       <section>
         <h2>Share</h2>
         <button onClick={() => void handleShare()}>Share</button>
+        <button onClick={() => void handleMaxShare()}>Share In MAX</button>
         {shareError && <p style={{ color: "red" }}>Share error: {shareError}</p>}
       </section>
 
